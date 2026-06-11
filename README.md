@@ -1,104 +1,223 @@
-# Projet Base de Données - Végétaux
+# 🌿 Gestion d'une Jardinerie - Base de données MySQL
 
-## Présentation
+##  Présentation du projet
 
-Ce projet consiste en la conception et l’implémentation d’une base de données relationnelle nommée `vegetaux`, destinée à gérer les activités liées aux végétaux, aux clients, aux fournisseurs, aux commandes, aux achats et au stock.
+Ce projet a pour objectif la conception et la mise en œuvre d'une base de données relationnelle permettant de gérer l'activité d'une jardinerie.
 
-Le projet a été réalisé selon une démarche de modélisation de données en plusieurs étapes, allant du besoin métier jusqu’à l’implémentation SQL finale [web:20][web:22][web:23].
+La base de données permet de gérer :
 
-## Objectifs du projet
+- Les produits et leurs catégories
+- Les espèces végétales
+- Les stocks et emplacements
+- Les fournisseurs et les achats
+- Les clients et les commandes
+- Les employés
+- Les lots de produits
 
-L’objectif principal est de structurer les données de manière cohérente afin de :
+Le projet a été réalisé en suivant les différentes étapes de conception d'une base de données relationnelle.
 
-- gérer les clients, les employés et les fournisseurs ;
-- suivre les produits, les catégories et les espèces ;
-- organiser les commandes clients et les achats ;
-- administrer le stock, les emplacements et les lots produits ;
-- garantir l’intégrité des données grâce aux clés primaires et étrangères.
+---
 
-## Étapes de conception
+# Étapes de conception
 
-### 1. MCD — Modèle Conceptuel de Données
-Le MCD permet de représenter les données du système d’information indépendamment de toute contrainte technique. Il met en évidence les entités, les associations, les attributs et les cardinalités [web:20][web:22][web:24].
+## 1. Analyse des besoins
 
-### 2. MLD — Modèle Logique de Données
-Le MLD est la traduction du MCD dans un modèle relationnel. Il précise la structure logique des tables, les relations entre elles et le passage des identifiants vers les clés primaires et étrangères [web:20][web:22][web:25].
+L'objectif est de modéliser le fonctionnement d'une jardinerie afin de :
 
-### 3. MPD — Modèle Physique de Données
-Le MPD correspond à l’implémentation concrète dans le SGBDR. Il définit les tables, les champs, les types de données, les clés primaires, les clés étrangères et les contraintes SQL utilisées dans le script [web:20][web:23][web:25].
+- Suivre les produits disponibles
+- Gérer les fournisseurs et les achats
+- Gérer les clients et leurs commandes
+- Organiser le stockage des produits
+- Assurer la traçabilité des lots
 
-## Modèle de données
+---
 
-La base de données contient notamment les tables suivantes :
+## 2. MCD (Modèle Conceptuel de Données)
 
-- `achat`
-- `achat_prod`
-- `categorie`
-- `client`
-- `client_prod`
-- `commande_client`
-- `com_prod`
-- `emplacement`
-- `employe`
-- `employe_emplacement`
-- `espece`
-- `fournisseur`
-- `lot_produit`
-- `produit`
-- `stock`
+Le MCD a été réalisé afin d'identifier :
 
-Ces tables permettent de couvrir les principaux besoins fonctionnels du projet, notamment la gestion des produits, des commandes, des relations avec les clients et le suivi du stock.
+### Entités principales
 
-## Contraintes et intégrité
+- Produit
+- Catégorie
+- Espèce
+- Stock
+- Emplacement
+- Fournisseur
+- Achat
+- Client
+- Commande
+- Employé
+- Lot Produit
 
-Le schéma repose sur plusieurs contraintes d’intégrité :
+### Associations
 
-- clés primaires pour identifier chaque enregistrement ;
-- clés étrangères pour garantir la cohérence entre les tables ;
-- contraintes `ON DELETE RESTRICT` et `ON UPDATE RESTRICT` afin d’éviter la suppression ou la modification de données référencées.
+- Achat ↔ Produit
+- Client ↔ Produit
+- Commande ↔ Client
+- Employé ↔ Emplacement
 
-Ces règles assurent la fiabilité et la cohérence des données dans la base.
+Le MCD permet de représenter les règles de gestion indépendamment du système de gestion de base de données.
 
-## Cas de test
+---
 
-Pour valider le bon fonctionnement de la base, plusieurs cas de test peuvent être réalisés :
+## 3. MLD (Modèle Logique de Données)
 
-- insertion d’un fournisseur ;
-- insertion d’un client ;
-- insertion d’un produit valide ;
-- mise à jour d’un produit ;
-- mise à jour d’un stock ;
-- création d’une commande client ;
-- ajout de produits à une commande ;
-- suppression d’un enregistrement non référencé ;
-- tentative de suppression d’un enregistrement référencé ;
-- tentative d’insertion avec une clé étrangère invalide.
+Transformation du MCD en schéma relationnel.
 
-## Prérequis
+### Exemple
 
-- MySQL ou MariaDB ;
-- phpMyAdmin ou un autre outil de gestion SQL ;
-- un serveur local de type XAMPP, WAMP ou MAMP.
+```text
+PRODUIT(
+    id_produit,
+    nom_produit,
+    reference,
+    prix,
+    description,
+    date_fabrication,
+    date_peremption,
+    id_categorie,
+    id_espece,
+    id_stock
+)
 
-## Installation
+CATEGORIE(
+    id_categorie,
+    nom_categorie
+)
 
-1. Importer le fichier `script.sql` dans votre SGBD.
-2. Vérifier la création de la base `vegetaux`.
-3. Exécuter les requêtes de test pour valider le schéma.
-4. Ajouter ensuite les données de démonstration si nécessaire.
-
-## Structure du projet
-
-```bash
-.
-├── script.sql
-└── README.md
+ESPECE(
+    id_espece,
+    nom_espece,
+    nom_scientifique
+)
 ```
 
-## Remarques
+Les associations plusieurs-à-plusieurs ont été transformées en tables de liaison :
 
-Certaines tables d’association et certaines contraintes doivent être vérifiées avant une utilisation en production, notamment pour s’assurer que toutes les clés étrangères pointent vers les bonnes tables.
+- achat_prod
+- client_prod
+- employe_emplacement
 
-## Auteur
+---
 
-Bah Mohamed Lamine
+## 4. MPD (Modèle Physique de Données)
+
+Le MLD a été adapté au SGBD MySQL :
+
+- Définition des types de données
+- Création des clés primaires
+- Création des clés étrangères
+- Contraintes d'intégrité référentielle
+
+Exemple :
+
+```sql
+CREATE TABLE categorie (
+    id_categorie INT PRIMARY KEY,
+    nom_categorie VARCHAR(50)
+);
+```
+
+---
+
+## 5. Implémentation
+
+La base a été implémentée sous MySQL à l'aide d'un script SQL contenant :
+
+- Création des tables
+- Définition des relations
+- Insertion des données de test
+
+Chaque table contient au minimum 15 enregistrements afin de permettre la réalisation de requêtes et de tests.
+
+---
+
+# 🗄️ Structure de la base
+
+## Tables principales
+
+| Table | Description |
+|---------|-------------|
+| categorie | Catégories de produits |
+| espece | Espèces végétales |
+| produit | Produits vendus |
+| stock | Quantités en stock |
+| emplacement | Localisation du stock |
+| fournisseur | Fournisseurs |
+| achat | Achats effectués |
+| client | Clients |
+| commande_client | Commandes clients |
+| employe | Employés |
+| lot_produit | Gestion des lots |
+
+## Tables de liaison
+
+| Table | Description |
+|---------|-------------|
+| achat_prod | Relation achat/produit |
+| client_prod | Relation client/produit |
+| com_prod | Relation commande/client |
+| employe_emplacement | Relation employé/emplacement |
+
+---
+
+#  Technologies utilisées
+
+- MySQL
+- SQL
+- MySQL Workbench / phpMyAdmin
+- GitHub
+
+---
+
+## Importer la base
+
+```sql
+SOURCE script.sql;
+```
+
+ou via phpMyAdmin :
+
+1. Créer une base de données.
+2. Importer le fichier SQL.
+3. Exécuter le script.
+
+---
+
+#  Exemples de requêtes
+
+### Afficher tous les produits
+
+```sql
+SELECT * FROM produit;
+```
+
+### Afficher les produits avec leur catégorie
+
+```sql
+SELECT p.nom_produit, c.nom_categorie
+FROM produit p
+JOIN categorie c
+ON p.id_categorie = c.id_categorie;
+```
+
+### Afficher les achats effectués par fournisseur
+
+```sql
+SELECT a.id_achat, f.nom_fournisseur
+FROM achat a
+JOIN fournisseur f
+ON a.id_fournisseur = f.id_fournisseur;
+```
+---
+
+#  Auteur
+
+Bah Mohamed Lamine.
+
+---
+
+# Licence
+
+Projet pédagogique destiné à l'apprentissage de la modélisation de données et du langage SQL.
